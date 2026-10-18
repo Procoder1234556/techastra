@@ -61,11 +61,18 @@ Legacy `@devnovate.local` emails still work if your database was seeded before t
 
 ## Deploy to Vercel
 
-Production deploy (frontend + API + Supabase) is documented in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** — env vars, verify checklist, and limitations.
+| | |
+|--|--|
+| **Live app** | https://techastra-zeta.vercel.app |
+| **GitHub** | https://github.com/Procoder1234556/techastra |
+| **Docs** | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
 
-Quick deploy after env is set in Vercel:
+Production is a **monorepo deploy**: Vite static site + Express API (`api/index.js` serverless) + Supabase.
+
+**Before the API works**, add `DATABASE_URL`, `SESSION_SECRET`, and `CLIENT_URL` in the Vercel project settings (see deployment doc), then redeploy.
 
 ```bash
+vercel link
 vercel --prod
 ```
 
