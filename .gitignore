@@ -1,0 +1,8 @@
+.env
+.env.local
+.env.vercel.local
+.vercel
+node_modules/
+client/dist/
+server/uploads/*
+!server/uploads/.gitkeep
