@@ -8,9 +8,22 @@ Full-stack deployment: **Vite React** (static) + **Express API** (serverless fun
 - [GitHub](https://github.com) repo (this project is pushed via `gh` + `vercel`)
 - Supabase project with **pooler** `DATABASE_URL` (port `6543`)
 
+## Production URL
+
+- **App:** https://techastra-zeta.vercel.app  
+- **GitHub:** https://github.com/Procoder1234556/techastra  
+
 ## 1. Environment variables (Vercel project settings)
 
-Set these in **Vercel → Project → Settings → Environment Variables** (Production, Preview, Development):
+Set these in **Vercel → Project → Settings → Environment Variables** (Production, Preview, Development).
+
+> **Required for API to run:** without `DATABASE_URL` and `SESSION_SECRET`, `/health` and `/api/*` will return 500.
+
+Optional helper (run locally, never commit secrets):
+
+```powershell
+.\scripts\vercel-env-sync.ps1
+```
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -58,7 +71,7 @@ Or connect the GitHub repo in the Vercel dashboard and enable **Production** dep
 
 | Check | URL |
 |-------|-----|
-| Health | `https://YOUR_DOMAIN/health` → `{"ok":true,...}` |
+| Health | `https://techastra-zeta.vercel.app/health` → `{"ok":true,...}` |
 | App | `https://YOUR_DOMAIN/` |
 | Dev login | **Join with 1-Click** or `/auth/google?email=student@techastra.local&code=YOUR_DEMO_CODE` |
 
