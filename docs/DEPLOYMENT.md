@@ -39,6 +39,20 @@ Optional helper (run locally, never commit secrets):
 
 After changing `VITE_*` variables, **redeploy** so the client rebuilds.
 
+**One-time setup in Vercel UI** (Project → Settings → Environment Variables):
+
+1. `DATABASE_URL` — Supabase pooler URL  
+2. `SESSION_SECRET` — long random string  
+3. `CLIENT_URL` = `https://techastra-zeta.vercel.app`  
+4. `DEMO_ACCESS_CODE` and `VITE_DEMO_ACCESS_CODE` — same value (e.g. your demo gate)  
+5. Redeploy: `vercel --prod` or push to GitHub if the repo is connected  
+
+Schema is applied via `npm run seed` / local API against the same database (Vercel skips full `schema.sql` on boot to avoid timeouts). Run once from your machine:
+
+```bash
+npm run seed
+```
+
 ## 2. Database setup
 
 On first deploy the API runs `schema.sql` and seeds demo data if tables are empty.
