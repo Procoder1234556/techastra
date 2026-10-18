@@ -14,7 +14,9 @@ export function getPool() {
     pool = new Pool({
       connectionString: config.databaseUrl,
       ssl: { rejectUnauthorized: false },
-      max: 10,
+      max: process.env.VERCEL ? 2 : 10,
+      connectionTimeoutMillis: 10_000,
+      idleTimeoutMillis: 10_000,
     });
   }
   return pool;
@@ -31,10 +33,12 @@ async function runMigrations() {
 
 export async function connectDb() {
   await query('SELECT 1');
-  await runMigrations();
-  await query(
-    'ALTER TABLE techastra_teams ADD COLUMN IF NOT EXISTS project_score INTEGER',
-  );
+  if (!process.env.VERCEL || process.env.RUN_SCHEMA_ON_BOOT === '1') {
+    await runMigrations();
+    await query(
+      'ALTER TABLE techastra_teams ADD COLUMN IF NOT EXISTS project_score INTEGER',
+    );
+  }
   console.log('Supabase PostgreSQL connected.');
 }
 

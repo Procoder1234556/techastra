@@ -142,7 +142,11 @@ export async function initApp() {
     initPromise = (async () => {
       await connectDb();
       await ensureDefaultTemplates();
-      await ensureSeedData();
+      if (!process.env.VERCEL) {
+        await ensureSeedData();
+      } else {
+        await ensureSeedData().catch(() => {});
+      }
       return createApp();
     })();
   }
