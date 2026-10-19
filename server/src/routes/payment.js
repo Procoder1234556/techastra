@@ -48,17 +48,21 @@ router.post('/create-order', requireAuth, async (req, res) => {
     [req.session.userId, eventId, orderId, amountPaise, JSON.stringify({ mode, receipt })],
   );
 
-  res.json({
+  const payment = {
     orderId,
     amount: amountPaise,
     currency: 'INR',
     keyId: config.razorpayKeyId || null,
     mode,
-  });
+  };
+
+  res.json({ success: true, payment, ...payment });
 });
 
 router.post('/verify', requireAuth, async (req, res) => {
-  const { orderId, paymentId, signature } = req.body;
+  const orderId = req.body.orderId || req.body.razorpay_order_id;
+  const paymentId = req.body.paymentId || req.body.razorpay_payment_id;
+  const signature = req.body.signature || req.body.razorpay_signature;
   if (!orderId) return res.status(400).json({ message: 'orderId required' });
 
   const { rows } = await query('SELECT * FROM techastra_payments WHERE order_id = $1', [orderId]);
@@ -85,7 +89,7 @@ router.post('/verify', requireAuth, async (req, res) => {
     );
   }
 
-  res.json({ success: verified });
+  res.json({ success: verified, verified });
 });
 
 export default router;

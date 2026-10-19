@@ -23,9 +23,10 @@ export async function submitQuest(questId, userId, submissionUrl) {
   await query('UPDATE techastra_users SET xp = xp + 10, updated_at = now() WHERE id = $1', [userId]);
 }
 
-export async function leaderboard() {
+export async function leaderboard({ limit = 25 } = {}) {
   const { rows } = await query(
-    'SELECT id, name, email, xp, college FROM techastra_users ORDER BY xp DESC LIMIT 25',
+    'SELECT id, name, email, xp, college FROM techastra_users ORDER BY xp DESC LIMIT $1',
+    [Math.min(limit, 100)],
   );
   return rows.map((r) => ({
     _id: r.id,
@@ -65,6 +66,37 @@ export async function listSubmissions() {
     status: r.status,
     createdAt: r.created_at,
   }));
+}
+
+export async function listUserSubmissions(userId) {
+  const { rows } = await query(
+    `SELECT s.*, q.title AS quest_title
+     FROM techastra_quest_submissions s
+     JOIN techastra_quests q ON q.id = s.quest_id
+     WHERE s.user_id = $1
+     ORDER BY s.created_at DESC`,
+    [userId],
+  );
+  return rows.map((r) => ({
+    _id: r.id,
+    questId: r.quest_id,
+    questTitle: r.quest_title,
+    status: r.status,
+    submissionUrl: r.submission_url,
+    createdAt: r.created_at,
+  }));
+}
+
+export async function listPendingSubmissions() {
+  const { rows } = await query(
+    `SELECT s.*, q.title AS quest_title, u.name AS user_name
+     FROM techastra_quest_submissions s
+     JOIN techastra_quests q ON q.id = s.quest_id
+     JOIN techastra_users u ON u.id = s.user_id
+     WHERE s.status = 'pending'
+     ORDER BY s.created_at DESC`,
+  );
+  return rows;
 }
 
 export async function updateSubmissionStatus(submissionId, status) {

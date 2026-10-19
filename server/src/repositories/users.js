@@ -40,3 +40,53 @@ export async function updateUserRole(id, role) {
   );
   return formatUser(rows[0]);
 }
+
+export async function updateUserCollege(id, college) {
+  const { rows } = await query(
+    'UPDATE techastra_users SET college = $2, updated_at = now() WHERE id = $1 RETURNING *',
+    [id, college],
+  );
+  return formatUser(rows[0]);
+}
+
+export async function listUserEmails() {
+  const { rows } = await query('SELECT email, name, role FROM techastra_users ORDER BY email');
+  return rows;
+}
+
+export async function listUsers({
+  page = 1,
+  limit = 25,
+  email,
+  sortBy = 'email',
+  sortOrder = 'asc',
+} = {}) {
+  const safeLimit = Math.min(Math.max(Number(limit) || 25, 1), 100);
+  const safePage = Math.max(Number(page) || 1, 1);
+  const offset = (safePage - 1) * safeLimit;
+  const orderCol = sortBy === 'name' ? 'name' : sortBy === 'role' ? 'role' : 'email';
+  const orderDir = sortOrder === 'desc' ? 'DESC' : 'ASC';
+  const params = [];
+  const filters = [];
+  if (email) {
+    params.push(`%${email}%`);
+    filters.push(`email ILIKE $${params.length}`);
+  }
+  const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
+  params.push(safeLimit);
+  const limitIdx = params.length;
+  params.push(offset);
+  const offsetIdx = params.length;
+  const countSql = `SELECT COUNT(*)::int AS c FROM techastra_users ${where}`;
+  const listSql = `SELECT * FROM techastra_users ${where} ORDER BY ${orderCol} ${orderDir} LIMIT $${limitIdx} OFFSET $${offsetIdx}`;
+  const [{ rows: countRows }, { rows }] = await Promise.all([
+    query(countSql, email ? [params[0]] : []),
+    query(listSql, params),
+  ]);
+  return {
+    users: rows.map(formatUser),
+    total: countRows[0].c,
+    page: safePage,
+    limit: safeLimit,
+  };
+}

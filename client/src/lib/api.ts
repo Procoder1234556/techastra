@@ -29,7 +29,8 @@ export type Event = {
   endDate?: string;
   location?: string;
   organizationName?: string;
-  live?: boolean;
+  live?: boolean | string;
+  verified?: boolean;
   isFeatured?: boolean;
   prizePool?: string;
   teamSize?: string;

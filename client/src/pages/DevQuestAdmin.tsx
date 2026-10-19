@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import { API } from '../lib/apiPaths';
 type Submission = {
   _id: string;
   questTitle: string;
@@ -11,11 +12,14 @@ type Submission = {
 
 export function DevQuestAdmin() {
   const [rows, setRows] = useState<Submission[]>([]);
+  const [pendingCount, setPendingCount] = useState(0);
   const [err, setErr] = useState('');
 
   const load = () => {
+    api.get<{ pendingCount: number }>(API.questsAdmin).then((res) => setPendingCount(res.data.pendingCount ?? 0));
+    api.get<Submission[]>(API.questsAdminPending).catch(() => []);
     api
-      .get<Submission[]>('/api/v1/quests/admin/submissions')
+      .get<Submission[]>(API.questsSubmissions)
       .then((res) => {
         setErr('');
         setRows(res.data);
@@ -38,7 +42,9 @@ export function DevQuestAdmin() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <h1 className="font-display text-3xl font-bold">Quest moderation</h1>
-      <p className="mt-2 text-sm text-neutral-500">Approve or reject DevQuest submissions (local clone).</p>
+      <p className="mt-2 text-sm text-neutral-500">
+        Approve or reject DevQuest submissions · {pendingCount} pending in queue.
+      </p>
       {err && <p className="mt-2 text-sm text-amber-600">{err}</p>}
       <ul className="mt-8 space-y-3 text-sm">
         {rows.map((s) => (

@@ -37,9 +37,40 @@ export async function leaveTeam({ teamCode, userId }) {
   );
 }
 
+export async function findTeamById(teamId) {
+  const { rows } = await query(
+    `SELECT t.*, e.name AS event_name, e.hackathon
+     FROM techastra_teams t
+     LEFT JOIN techastra_events e ON e.id = t.event_id
+     WHERE t.id = $1`,
+    [teamId],
+  );
+  if (!rows[0]) return null;
+  const base = formatTeam(rows[0]);
+  return {
+    ...base,
+    eventName: rows[0].event_name || rows[0].hackathon || '',
+    hackathon: rows[0].hackathon || '',
+    isSubmitted: Boolean(rows[0].submission_url),
+  };
+}
+
 export async function getTeamByCode(teamCode) {
-  const { rows } = await query('SELECT * FROM techastra_teams WHERE team_code = $1', [teamCode]);
-  return formatTeam(rows[0]);
+  const { rows } = await query(
+    `SELECT t.*, e.name AS event_name, e.hackathon
+     FROM techastra_teams t
+     LEFT JOIN techastra_events e ON e.id = t.event_id
+     WHERE UPPER(t.team_code) = UPPER($1)`,
+    [teamCode],
+  );
+  if (!rows[0]) return null;
+  const base = formatTeam(rows[0]);
+  return {
+    ...base,
+    eventName: rows[0].event_name || rows[0].hackathon || '',
+    hackathon: rows[0].hackathon || '',
+    isSubmitted: Boolean(rows[0].submission_url),
+  };
 }
 
 export async function listTeamsForUser(userId) {
@@ -56,6 +87,13 @@ export async function submitProject({ teamCode, url }) {
     [teamCode, url],
   );
   return formatTeam(rows[0]);
+}
+
+export async function listTeamsByEvent(eventId) {
+  const { rows } = await query('SELECT * FROM techastra_teams WHERE event_id = $1 ORDER BY created_at DESC', [
+    eventId,
+  ]);
+  return rows.map(formatTeam);
 }
 
 export async function listTeamsForOrganizer(organizerId) {

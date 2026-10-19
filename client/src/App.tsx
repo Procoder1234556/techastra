@@ -31,6 +31,9 @@ import { OrganizerInvite } from './pages/organizer/OrganizerInvite';
 import { OrganizerEventMailer } from './pages/organizer/OrganizerEventMailer';
 import { DevQuestHost } from './pages/DevQuestHost';
 import { DevQuestAdmin } from './pages/DevQuestAdmin';
+import { SuperadminInvites } from './pages/SuperadminInvites';
+import { MailerHubAdmin } from './pages/MailerHubAdmin';
+import { contactContent, faqContent, servicesContent } from './content/marketing';
 
 export default function App() {
   return (
@@ -57,10 +60,10 @@ export default function App() {
             <Route path="resources" element={<StaticPage title="Learning Resources" />} />
             <Route path="features" element={<StaticPage title="Features"><ul className="list-disc pl-5 space-y-2"><li>1-click hackathon registration</li><li>Team formation & job board</li><li>DevQuests XP & leaderboard</li><li>Organizer dashboards</li></ul></StaticPage>} />
             <Route path="how-it-works" element={<StaticPage title="How it works"><ol className="list-decimal pl-5 space-y-2"><li>Build your profile</li><li>Discover events</li><li>Register in one click</li><li>Form teams & submit projects</li></ol></StaticPage>} />
-            <Route path="faq" element={<StaticPage title="FAQ"><p>See README and CLONE_STATUS.md for platform features and API coverage.</p></StaticPage>} />
-            <Route path="our-team" element={<StaticPage title="Our Team" />} />
-            <Route path="contact" element={<StaticPage title="Contact" />} />
-            <Route path="services" element={<StaticPage title="Services" />} />
+            <Route path="faq" element={<StaticPage title="FAQ">{faqContent}</StaticPage>} />
+            <Route path="our-team" element={<StaticPage title="Our Team"><p>Techastra is built by student organizers and engineers who run hackathons across India.</p></StaticPage>} />
+            <Route path="contact" element={<StaticPage title="Contact">{contactContent}</StaticPage>} />
+            <Route path="services" element={<StaticPage title="Services">{servicesContent}</StaticPage>} />
             <Route path="HostEvent" element={<HostEvent />} />
             <Route path="privacy-policy" element={<StaticPage title="Privacy Policy" />} />
             <Route path="terms-of-service" element={<StaticPage title="Terms of Service" />} />
@@ -92,7 +95,8 @@ export default function App() {
 
             <Route element={<ProtectedRoute roles={['admin', 'superadmin']} />}>
               <Route path="admin" element={<AdminDashboard />} />
-              <Route path="superadmin/invites" element={<StaticPage title="Invites" />} />
+              <Route path="admin/mailerhub" element={<MailerHubAdmin />} />
+              <Route path="superadmin/invites" element={<SuperadminInvites />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -6,18 +6,29 @@ import { useAuth } from '../context/AuthContext';
 export function Jobs() {
   const { user, loginAs } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [featured, setFeatured] = useState<Job[]>([]);
   const [q, setQ] = useState('');
 
   useEffect(() => {
     api.get<Job[]>('/api/v1/jobs').then((res) => setJobs(res.data));
+    api.get<Job[]>('/api/v1/jobs/featured').then((res) => setFeatured(res.data));
   }, []);
 
-  const filtered = jobs.filter(
-    (j) =>
-      !q ||
-      j.title.toLowerCase().includes(q.toLowerCase()) ||
-      j.company.toLowerCase().includes(q.toLowerCase()),
-  );
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (!q.trim()) {
+        api.get<Job[]>('/api/v1/jobs').then((res) => setJobs(res.data));
+        return;
+      }
+      api
+        .get<Job[]>('/api/v1/jobs/search', { params: { q: q.trim() } })
+        .then((res) => setJobs(res.data))
+        .catch(() => {});
+    }, 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  const filtered = jobs;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -28,6 +39,22 @@ export function Jobs() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
+      {featured.length > 0 && !q.trim() && (
+        <section className="mt-8">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">Featured</h2>
+          <ul className="mt-4 grid gap-4 md:grid-cols-2">
+            {featured.slice(0, 4).map((job) => (
+              <li
+                key={`feat-${job._id}`}
+                className="rounded-2xl border border-violet-200 bg-violet-50/50 p-5 dark:border-violet-500/30 dark:bg-violet-500/10"
+              >
+                <h2 className="font-semibold">{job.title}</h2>
+                <p className="text-sm text-neutral-500">{job.company}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <ul className="mt-8 grid gap-4 md:grid-cols-2">
         {filtered.map((job) => (
           <li

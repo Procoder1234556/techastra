@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { NotificationBell } from './NotificationBell';
 
 const nav = [
   { to: '/events', label: 'Events' },
@@ -17,7 +18,7 @@ export function Layout() {
       <header className="sticky top-0 z-50 border-b border-neutral-200/80 dark:border-white/10 bg-white/90 dark:bg-neutral-950/90 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
           <Link to="/" className="font-display text-xl font-bold tracking-tight">
-            TechAstra
+            Techastra
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
             {nav.map((item) => (
@@ -39,6 +40,7 @@ export function Layout() {
           <div className="flex items-center gap-2">
             {user ? (
               <>
+                <NotificationBell />
                 <Link
                   to="/profile"
                   className="hidden text-sm text-neutral-600 dark:text-neutral-300 sm:inline"

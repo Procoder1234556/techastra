@@ -5,7 +5,10 @@ export function DevQuestLeaderboard() {
   const [rows, setRows] = useState<{ name: string; xp: number; college?: string }[]>([]);
 
   useEffect(() => {
-    api.get('/api/v1/quests/leaderboard').then((res) => setRows(res.data));
+    api.get<any>('/api/v1/quests/leaderboard').then((res) => {
+      const list = Array.isArray(res.data) ? res.data : res.data?.leaderboard || [];
+      setRows(list);
+    });
   }, []);
 
   return (

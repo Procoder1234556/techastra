@@ -35,7 +35,7 @@ router.post('/send', requireAuth, requireRole('organizer', 'admin', 'superadmin'
     success: true,
     sent: result?.sent || 0,
     campaignId: campaign._id,
-    message: `Delivered to ${result?.sent || 0} recipients (in-app + delivery log; SMTP optional)`,
+    message: `Delivered to ${result?.sent || 0} recipients (${result?.mode || 'in_app'}${result?.emailed ? `, ${result.emailed} emailed` : ''})`,
     subject,
   });
 });

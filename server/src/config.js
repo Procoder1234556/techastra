@@ -36,6 +36,18 @@ export const config = {
   uploadDir:
     process.env.UPLOAD_DIR ||
     (process.env.VERCEL ? '/tmp/techastra-uploads' : path.join(rootDir, 'server', 'uploads')),
+  email: {
+    preferred: (process.env.EMAIL_PROVIDER || 'auto').toLowerCase(),
+    host: process.env.EMAIL_HOST || '',
+    port: Number(process.env.EMAIL_PORT) || 587,
+    secure: process.env.EMAIL_SECURE === 'true',
+    user: process.env.EMAIL_USER || '',
+    pass: process.env.EMAIL_PASS || '',
+    from: process.env.EMAIL_FROM || 'noreply@techastra.local',
+    fromName: process.env.EMAIL_FROM_NAME || 'Techastra',
+    replyTo: process.env.EMAIL_REPLY_TO || '',
+    zeptoToken: process.env.ZEPTOMAIL_TOKEN || '',
+  },
 };
 
 if (!config.databaseUrl) {

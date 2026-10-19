@@ -1,4 +1,5 @@
 import { query } from '../db.js';
+import { sendEmail } from '../services/email.js';
 
 const DEFAULT_TEMPLATES = [
   {
@@ -152,17 +153,40 @@ export async function sendCampaign(campaignId) {
   if (!campaign) return null;
   const audience = await audienceForCampaign(campaign);
   let sent = 0;
+  let emailed = 0;
+  let emailFailed = 0;
   for (const user of audience) {
+    const bodyHtml = (campaign.bodyHtml || '').replace(/\{\{name\}\}/g, user.name || 'there');
+    const plain = bodyHtml.replace(/<[^>]+>/g, ' ').trim();
+    let deliveryStatus = 'sent';
+    try {
+      const poolCategory =
+        campaign.templateSlug === 'certificate_ready' || campaign.template === 'certificate'
+          ? 'certificates'
+          : campaign.name?.toLowerCase().includes('invit')
+            ? 'invitations'
+            : 'notifications';
+      const mailResult = await sendEmail({
+        to: user.email,
+        subject: campaign.subject,
+        html: bodyHtml,
+        text: plain,
+        category: poolCategory,
+      });
+      if (mailResult) emailed += 1;
+    } catch {
+      deliveryStatus = 'failed';
+      emailFailed += 1;
+    }
     await query(
       `INSERT INTO techastra_mailer_deliveries (campaign_id, user_id, email, status)
-       VALUES ($1, $2, $3, 'sent')`,
-      [campaignId, user.id, user.email],
+       VALUES ($1, $2, $3, $4)`,
+      [campaignId, user.id, user.email, deliveryStatus],
     );
-    const body = (campaign.bodyHtml || '').replace(/\{\{name\}\}/g, user.name || 'there');
     await query(
       `INSERT INTO techastra_notifications (user_id, title, body)
        VALUES ($1, $2, $3)`,
-      [user.id, campaign.subject, body.replace(/<[^>]+>/g, ' ').slice(0, 500)],
+      [user.id, campaign.subject, plain.slice(0, 500)],
     );
     sent += 1;
   }
@@ -172,7 +196,8 @@ export async function sendCampaign(campaignId) {
      WHERE id = $1`,
     [campaignId, sent],
   );
-  return { campaignId, sent, mode: 'in_app_and_log' };
+  const mode = emailed > 0 ? 'email_and_in_app' : emailFailed > 0 ? 'partial_email' : 'in_app_and_log';
+  return { campaignId, sent, emailed, emailFailed, mode };
 }
 
 export async function campaignStats(campaignId) {

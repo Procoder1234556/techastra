@@ -60,7 +60,7 @@ On first deploy the API runs `schema.sql` and seeds demo data if tables are empt
 To reset demo data locally or from CI:
 
 ```bash
-npm run migrate   # only if upgrading from `devnovate_*` tables
+npm run migrate   # only if upgrading legacy table prefixes
 npm run seed
 ```
 
@@ -69,7 +69,7 @@ Sessions on Vercel use **`techastra_session`** in Postgres (`connect-pg-simple`)
 ## 3. Deploy from Git
 
 ```bash
-cd techastra   # or devnovate-clone
+cd techastra
 git init
 git add .
 git commit -m "Prepare TechAstra for Vercel"

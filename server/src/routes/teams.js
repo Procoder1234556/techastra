@@ -31,7 +31,13 @@ router.post('/leave', requireAuth, async (req, res) => {
 router.get('/members/:teamCode', async (req, res) => {
   const team = await teamsRepo.getTeamByCode(req.params.teamCode);
   if (!team) return res.status(404).json({ message: 'Team not found' });
-  res.json(team);
+  res.json({ team, ...team });
+});
+
+router.get('/members/:eventName/:teamCode', async (req, res) => {
+  const team = await teamsRepo.getTeamByCode(req.params.teamCode);
+  if (!team) return res.status(404).json({ message: 'Team not found' });
+  res.json({ team, ...team });
 });
 
 router.get('/user/:userId', async (req, res) => {

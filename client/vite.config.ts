@@ -4,13 +4,15 @@ import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const clientDir = path.dirname(fileURLToPath(import.meta.url))
+const rootDir = path.resolve(clientDir, '..')
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, rootDir, '')
   const apiTarget = env.VITE_API_URL || 'http://localhost:3001'
 
   return {
+    root: clientDir,
     envDir: rootDir,
     plugins: [react(), tailwindcss()],
     server: {

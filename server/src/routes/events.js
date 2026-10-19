@@ -53,6 +53,14 @@ router.get('/getapplied', requireAuth, async (req, res) => {
   res.json(events);
 });
 
+router.post('/appointOrganizer', requireAuth, requireRole('admin', 'superadmin'), async (req, res) => {
+  const { eventId, userId } = req.body;
+  if (!eventId || !userId) return res.status(400).json({ message: 'eventId and userId required' });
+  const event = await eventsRepo.appointOrganizer(eventId, userId);
+  if (!event) return res.status(404).json({ message: 'Event not found' });
+  res.json({ success: true, event });
+});
+
 router.post('/create', requireAuth, requireRole('organizer', 'admin', 'superadmin'), async (req, res) => {
   const body = { ...req.body };
   if (!body.hackathon && body.name) {
@@ -67,6 +75,33 @@ router.patch('/verify/:slug', requireAuth, requireRole('admin', 'superadmin'), a
   const event = await eventsRepo.setEventVerified(req.params.slug, req.body.verified);
   if (!event) return res.status(404).json({ message: 'Event not found' });
   res.json(event);
+});
+
+router.put('/update/:slug', requireAuth, requireRole('organizer', 'admin', 'superadmin'), async (req, res) => {
+  const event = await eventsRepo.resolveEventRef(req.params.slug);
+  if (!event) return res.status(404).json({ message: 'Event not found' });
+  const result = await eventsRepo.updateEvent(event._id, req.body, req.session.userId);
+  if (!result) return res.status(404).json({ message: 'Event not found' });
+  if (result.forbidden) return res.status(403).json({ message: 'Not an organizer for this event' });
+  res.json(result);
+});
+
+router.delete('/delete/:slug', requireAuth, requireRole('organizer', 'admin', 'superadmin'), async (req, res) => {
+  const event = await eventsRepo.resolveEventRef(req.params.slug);
+  if (!event) return res.status(404).json({ message: 'Event not found' });
+  const result = await eventsRepo.deleteEvent(event._id, req.session.userId);
+  if (!result) return res.status(404).json({ message: 'Event not found' });
+  if (result.forbidden) return res.status(403).json({ message: 'Not an organizer for this event' });
+  res.json({ success: true });
+});
+
+router.post('/duplicate', requireAuth, requireRole('organizer', 'admin', 'superadmin'), async (req, res) => {
+  const eventRef = req.body.eventId || req.body.hackathon;
+  if (!eventRef) return res.status(400).json({ message: 'eventId required' });
+  const result = await eventsRepo.duplicateEvent(eventRef, req.session.userId, req.body.name);
+  if (!result) return res.status(404).json({ message: 'Event not found' });
+  if (result.forbidden) return res.status(403).json({ message: 'Not an organizer for this event' });
+  res.status(201).json(result);
 });
 
 router.patch('/:id', requireAuth, requireRole('organizer', 'admin', 'superadmin'), async (req, res) => {

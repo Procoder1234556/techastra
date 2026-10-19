@@ -81,6 +81,14 @@ export async function findEventById(id) {
   return rows[0] ? formatEvent(rows[0]) : null;
 }
 
+/** Resolve UUID id or hackathon / event_name slug (reference bundle uses slugs in URLs). */
+export async function resolveEventRef(ref) {
+  if (!ref) return null;
+  const byId = await findEventById(ref);
+  if (byId) return byId;
+  return findEventBySlug(ref);
+}
+
 export async function createEvent(body, createdBy) {
   const { hackathon, eventName, doc, organizers } = buildEventInsert(body, createdBy);
   const { rows } = await query(
@@ -90,6 +98,20 @@ export async function createEvent(body, createdBy) {
     [hackathon, eventName, createdBy, organizers, JSON.stringify(doc)],
   );
   return formatEvent(rows[0]);
+}
+
+export async function appointOrganizer(eventId, organizerUserId) {
+  const { rows } = await query(
+    `UPDATE techastra_events
+     SET organizers = (
+       SELECT ARRAY(SELECT DISTINCT unnest(COALESCE(organizers, ARRAY[]::uuid[]) || $2::uuid))
+     ),
+     updated_at = now()
+     WHERE id = $1
+     RETURNING *`,
+    [eventId, organizerUserId],
+  );
+  return rows[0] ? formatEvent(rows[0]) : null;
 }
 
 export async function setEventVerified(slug, verified) {
@@ -155,17 +177,17 @@ export async function deleteEvent(eventId, userId) {
   return { deleted: true };
 }
 
-export async function duplicateEvent(eventId, userId) {
-  const event = await findEventById(eventId);
+export async function duplicateEvent(eventRef, userId, copyName) {
+  const event = await resolveEventRef(eventRef);
   if (!event) return null;
   if (!event.organizers?.includes(userId) && event.createdBy !== userId) {
     return { forbidden: true };
   }
-  const copyName = `${event.name || event.hackathon} (copy)`;
+  const name = copyName || `${event.name || event.hackathon} (Copy)`;
   const hackathon = `${event.hackathon}-copy-${Date.now().toString(36)}`;
   const body = {
     ...event,
-    name: copyName,
+    name,
     hackathon,
     eventName: hackathon,
   };

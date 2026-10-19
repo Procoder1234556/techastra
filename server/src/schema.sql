@@ -162,6 +162,20 @@ CREATE TABLE IF NOT EXISTS techastra_mailer_deliveries (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS techastra_mailer_gmail_accounts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  app_password TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'notifications',
+  daily_limit INTEGER NOT NULL DEFAULT 430,
+  warmup_enabled BOOLEAN NOT NULL DEFAULT true,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  sent_today INTEGER NOT NULL DEFAULT 0,
+  sent_today_reset DATE NOT NULL DEFAULT CURRENT_DATE,
+  created_by UUID REFERENCES techastra_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS techastra_uploads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES techastra_users(id) ON DELETE SET NULL,

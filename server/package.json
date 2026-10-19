@@ -9,15 +9,17 @@
     "migrate": "node src/run-migrate.js"
   },
   "dependencies": {
+    "connect-pg-simple": "^10.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^18.0.8",
     "express": "^5.3.0",
     "express-session": "^1.19.0",
-    "connect-pg-simple": "^10.0.0",
-    "serverless-http": "^3.2.0",
+    "imapflow": "^1.0.184",
     "multer": "^2.4.0",
+    "nodemailer": "^10.1.6",
     "pg": "^8.23.1",
+    "serverless-http": "^3.2.0",
     "uuid": "^14.0.3"
   },
   "devDependencies": {

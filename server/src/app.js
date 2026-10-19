@@ -24,12 +24,18 @@ import checkinRouter from './routes/checkin.js';
 import mailerhubRouter from './routes/mailerhub.js';
 import uploadRouter from './routes/upload.js';
 import paymentRouter from './routes/payment.js';
+import collegesRouter from './routes/colleges.js';
+import managerRouter from './routes/manager.js';
+import projectsRouter from './routes/projects.js';
+import invitesRouter from './routes/invites.js';
+import organizerMailerRouter from './routes/organizerMailer.js';
 import { ensureDefaultTemplates } from './repositories/mailerhub.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function isDemoEmail(email) {
   const lower = email.toLowerCase();
+  // Legacy demo domain kept for old seeds only
   return lower.endsWith('@techastra.local') || lower.endsWith('@devnovate.local');
 }
 
@@ -129,6 +135,11 @@ export function createApp() {
   app.use('/api/v1/mailerhub', mailerhubRouter);
   app.use('/api/v1/upload', uploadRouter);
   app.use('/api/v1/payment', paymentRouter);
+  app.use('/api/v1/colleges', collegesRouter);
+  app.use('/api/v1/manager', managerRouter);
+  app.use('/api/v1/projects', projectsRouter);
+  app.use('/api/v1/invites', invitesRouter);
+  app.use('/api/v1/organizer-mailer', organizerMailerRouter);
 
   app.get('/health', (_req, res) => res.json({ ok: true, database: 'supabase' }));
 

@@ -1,6 +1,8 @@
-# TechAstra
+# Techastra
 
 Hackathons, jobs, and communities platform — React + Express + Supabase PostgreSQL.
+
+**Agents:** read [`AGENTS.md`](./AGENTS.md) and [`../AGENTS.md`](../AGENTS.md). Product name is **Techastra** only.
 
 ## Stack
 
@@ -20,7 +22,7 @@ Tables are prefixed `techastra_*` so they do not collide with other apps in the 
 ## Quick start
 
 ```bash
-cd techastra   # junction at repo root → `devnovate-clone` (same project)
+cd techastra
 npm install
 npm install --prefix client --legacy-peer-deps
 npm install --prefix server
@@ -28,7 +30,7 @@ npm install --prefix server
 # configure env (single file at project root)
 copy .env.example .env
 
-# rename legacy tables (if any), apply schema, seed demo data
+# apply schema, seed demo data
 npm run migrate
 npm run seed
 
@@ -48,16 +50,14 @@ Use **Join with 1-Click** or visit:
 - `http://localhost:3001/auth/google?email=organizer@techastra.local`
 - `http://localhost:3001/auth/google?email=admin@techastra.local`
 
-Legacy `@devnovate.local` emails still work if your database was seeded before the rebrand.
-
 ## What’s implemented
 
-- Public **events** list & detail, **1-click register**, **4-step host wizard** (banner upload, custom questions, paid events)
+- Public **events** list & detail, **1-click register**, **5-step host wizard**
 - **Jobs** board, **communities**, **DevQuests**, teams, certificates
-- **MailerHub subset** (templates, campaigns, send, stats) + communications bulk send
+- **MailerHub** (templates, campaigns, Gmail pool, contacts, data export) + communications bulk send
 - **File upload** (`POST /api/v1/upload`, `/upload/banner`)
 - **Payments** — mock checkout by default; set `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` for live orders
-- Organizer / admin dashboards (role-gated); see `CLONE_STATUS.md` for gaps vs production
+- Organizer / admin dashboards (role-gated); see [`PROJECT_STATUS.md`](./PROJECT_STATUS.md)
 
 ## Deploy to Vercel
 
@@ -80,6 +80,6 @@ vercel --prod
 
 Copy `.env.example` to `.env` at the project root for `DATABASE_URL`, ports, and demo access code.
 
-## Migrating from `devnovate_*` tables
+## Legacy database prefixes
 
-If you already have data under the old `devnovate_*` prefix, either re-run `npm run seed` on a fresh schema or rename tables in Supabase (e.g. `ALTER TABLE devnovate_users RENAME TO techastra_users;` for each table) and re-apply `server/src/schema.sql` for any new tables.
+If an old database used non-`techastra_*` table names, run `npm run migrate` (see `server/src/migrate-devnovate-to-techastra.sql`) or re-seed on a fresh schema.

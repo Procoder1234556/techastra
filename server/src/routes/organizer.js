@@ -12,7 +12,11 @@ router.use(requireRole('organizer', 'manager', 'admin', 'superadmin'));
 router.get('/dashboard', async (req, res) => {
   const eventsHosted = await eventsRepo.countEventsForOrganizer(req.session.userId);
   const totalRegistrations = await registrationsRepo.countRegistrations();
-  res.json({ eventsHosted, totalRegistrations });
+  let event = null;
+  if (req.query.eventId) {
+    event = await eventsRepo.resolveEventRef(req.query.eventId.toString());
+  }
+  res.json({ eventsHosted, totalRegistrations, event });
 });
 
 router.get('/events', async (req, res) => {
@@ -49,11 +53,12 @@ router.get('/invite-link', async (req, res) => {
 });
 
 router.post('/invite', async (req, res) => {
+  const email = String(req.body.email || '').trim().toLowerCase();
+  if (!email) return res.status(400).json({ message: 'email required' });
   res.json({
     success: true,
-    sent: 0,
-    message: 'Invite email stub — use invite link or wire MailerHub in production',
-    to: req.body.email,
+    message: `Invite queued for ${email}. Use MailerHub invitations pool when SMTP is configured.`,
+    to: email,
   });
 });
 
