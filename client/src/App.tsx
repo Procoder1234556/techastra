@@ -35,6 +35,7 @@ import { SuperadminInvites } from './pages/SuperadminInvites';
 import { MailerHubAdmin } from './pages/MailerHubAdmin';
 import { MobileAppPreview } from './pages/MobileAppPreview';
 import { DeveloperPortal } from './pages/DeveloperPortal';
+import { DownloadApp } from './pages/DownloadApp';
 import { contactContent, faqContent, servicesContent } from './content/marketing';
 
 export default function App() {
@@ -77,6 +78,8 @@ export default function App() {
             <Route path="mobile" element={<MobileAppPreview />} />
             <Route path="developers" element={<DeveloperPortal />} />
             <Route path="api-docs" element={<DeveloperPortal />} />
+            <Route path="download" element={<DownloadApp />} />
+            <Route path="install" element={<DownloadApp />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="profile" element={<Profile />} />
