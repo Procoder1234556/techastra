@@ -29,6 +29,8 @@ import managerRouter from './routes/manager.js';
 import projectsRouter from './routes/projects.js';
 import invitesRouter from './routes/invites.js';
 import organizerMailerRouter from './routes/organizerMailer.js';
+import mobileRouter from './routes/mobile.js';
+import publicRouter from './routes/public.js';
 import { ensureDefaultTemplates } from './repositories/mailerhub.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -140,6 +142,8 @@ export function createApp() {
   app.use('/api/v1/projects', projectsRouter);
   app.use('/api/v1/invites', invitesRouter);
   app.use('/api/v1/organizer-mailer', organizerMailerRouter);
+  app.use('/api/v1/mobile', mobileRouter);
+  app.use('/api/v1/public', publicRouter);
 
   app.get('/health', (_req, res) => res.json({ ok: true, database: 'supabase' }));
 

@@ -1,0 +1,30 @@
+{
+  "name": "Techastra — Hackathons & Mobile Pass",
+  "short_name": "Techastra",
+  "description": "Luma-grade event discovery, dynamic QR tickets, offline venue pass, and organizer gate scanner.",
+  "start_url": "/mobile",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B0F19",
+  "theme_color": "#0B0F19",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Pass",
+      "url": "/mobile#pass",
+      "description": "Open your dynamic offline event pass"
+    },
+    {
+      "name": "Gate Scanner",
+      "url": "/mobile#scanner",
+      "description": "Host rapid QR check-in terminal"
+    }
+  ]
+}

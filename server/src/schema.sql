@@ -209,3 +209,29 @@ CREATE TABLE IF NOT EXISTS techastra_payments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS techastra_mobile_devices (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES techastra_users(id) ON DELETE CASCADE,
+  device_id TEXT NOT NULL,
+  platform TEXT NOT NULL DEFAULT 'android',
+  push_token TEXT,
+  app_version TEXT,
+  last_active_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (user_id, device_id)
+);
+
+CREATE TABLE IF NOT EXISTS techastra_checkin_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id UUID NOT NULL REFERENCES techastra_events(id) ON DELETE CASCADE,
+  registration_id UUID REFERENCES techastra_registrations(id) ON DELETE SET NULL,
+  scanned_by UUID REFERENCES techastra_users(id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'approved',
+  qr_payload TEXT NOT NULL,
+  offline_generated BOOLEAN NOT NULL DEFAULT false,
+  scanned_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_techastra_checkin_event ON techastra_checkin_logs(event_id);
+CREATE INDEX IF NOT EXISTS idx_techastra_checkin_reg ON techastra_checkin_logs(registration_id);

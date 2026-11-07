@@ -1,0 +1,82 @@
+name: Build and Release Techastra APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Client Dependencies and Build
+        run: |
+          npm install --prefix client --legacy-peer-deps
+          npm run build --prefix client
+
+      - name: Sync Capacitor Android Assets
+        run: |
+          npm install --legacy-peer-deps
+          npx cap sync android
+
+      - name: Build Android Debug APK
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Prepare Artifact
+        run: |
+          mkdir -p release-apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/techastra-v1.0.0-debug.apk
+
+      - name: Upload APK as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Techastra-Android-APK
+          path: release-apk/techastra-v1.0.0-debug.apk
+
+      - name: Create or Update GitHub Release with APK
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0-mobile
+          name: "Techastra v1.0.0 Mobile APK"
+          body: |
+            ## 📱 Techastra Official Android APK v1.0.0
+            
+            Welcome to the official Techastra Android app release.
+            
+            ### ✨ Features Included:
+            - **Dynamic QR Passes**: Live HMAC-SHA256 authenticated ticket with anti-screenshot ticking seconds watermark (`HH:MM:SS IST`).
+            - **Gate Scanner**: Instant QR validation with atomic duplicate check-in detection for organizers.
+            - **DevQuests & XP Feed**: Browse bounties, track XP, and join hackathons on the go.
+            - **Offline-Resilient**: Cached pass access at event venues with zero connectivity loss.
+            
+            ---
+            **Download the attached APK below and install directly on your Android device.**
+          files: release-apk/techastra-v1.0.0-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

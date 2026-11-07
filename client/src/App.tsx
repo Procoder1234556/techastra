@@ -33,6 +33,8 @@ import { DevQuestHost } from './pages/DevQuestHost';
 import { DevQuestAdmin } from './pages/DevQuestAdmin';
 import { SuperadminInvites } from './pages/SuperadminInvites';
 import { MailerHubAdmin } from './pages/MailerHubAdmin';
+import { MobileAppPreview } from './pages/MobileAppPreview';
+import { DeveloperPortal } from './pages/DeveloperPortal';
 import { contactContent, faqContent, servicesContent } from './content/marketing';
 
 export default function App() {
@@ -70,6 +72,11 @@ export default function App() {
             <Route path="cookie-policy" element={<StaticPage title="Cookie Policy" />} />
             <Route path="cancellations-refunds" element={<StaticPage title="Cancellations & Refunds" />} />
             <Route path="unauthorized" element={<Unauthorized />} />
+
+            {/* Mobile Experience & Developer MCP Portal */}
+            <Route path="mobile" element={<MobileAppPreview />} />
+            <Route path="developers" element={<DeveloperPortal />} />
+            <Route path="api-docs" element={<DeveloperPortal />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="profile" element={<Profile />} />

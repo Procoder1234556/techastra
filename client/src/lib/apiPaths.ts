@@ -30,4 +30,9 @@ export const API = {
   checkinMy: '/api/v1/checkin/my',
   notificationsEvent: '/api/v1/notifications/event',
   registrationsTeam: '/api/v1/registrations/team',
+  mobileBootstrap: '/api/v1/mobile/bootstrap',
+  mobileFeed: '/api/v1/mobile/feed',
+  mobileTickets: '/api/v1/mobile/tickets',
+  mobileCheckin: '/api/v1/mobile/organizer/checkin',
+  mobileQuests: '/api/v1/mobile/quests',
 } as const;

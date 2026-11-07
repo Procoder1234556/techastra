@@ -1,0 +1,8 @@
+{
+  "appId": "local.techastra.app",
+  "appName": "Techastra",
+  "webDir": "client/dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

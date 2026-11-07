@@ -1,8 +1,26 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'DM Serif Display', Georgia, serif;
+
+  /* Techastra Core Brand Tokens */
+  --color-techastra-canvas: #0b0f19;
+  --color-techastra-surface: #111827;
+  --color-techastra-card: #161e2e;
+  --color-techastra-border: #1f2937;
+  --color-techastra-border-subtle: #374151;
+
+  /* Brand Accents */
+  --color-techastra-primary: #6366f1;
+  --color-techastra-primary-hover: #4f46e5;
+  --color-techastra-cyan: #06b6d4;
+  --color-techastra-amber: #f59e0b;
+
+  /* Text & Foreground */
+  --color-techastra-text-primary: #f9fafb;
+  --color-techastra-text-secondary: #9ca3af;
+  --color-techastra-text-muted: #6b7280;
 }
 
 html {
